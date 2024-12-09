@@ -5,11 +5,14 @@ const { ccclass, property } = _decorator;
 
 @ccclass("ViewMgr")
 export class ViewMgr extends Component {
+    public static instance: ViewMgr = null;
+
     @property([View]) views: View[] = [];
 
     currentView: View;
 
     start() {
+        ViewMgr.instance = this;
         for (const v of this.views) {
             v.mgr = this;
         }
