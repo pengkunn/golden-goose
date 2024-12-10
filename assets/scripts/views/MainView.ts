@@ -12,8 +12,14 @@ const { ccclass, property } = _decorator;
 @ccclass('MainView')
 export class MainView extends View {
     @property([Node]) tabs: Node[] = [];
+    @property([Node]) tabPanels: Node[] = [];
+    @property(Node) selectedTabBg: Node = null;
     @property(Sprite) goldIcon: Sprite = null;
     @property(Label) goldNumber: Label = null;
+    @property([Node]) bottomBtns: Node[] = [];
+    @property(SpriteFrame) bottomBtnSelected: SpriteFrame = null;
+    @property(SpriteFrame) bottomBtnUnselected: SpriteFrame = null;
+
 
     start() {
         let login = async () => {
@@ -55,36 +61,45 @@ export class MainView extends View {
     }
 
     refreshView() {
-        let goldTokenInfo = user.tokenInfos.find(t => t.token === "usdt")
-        if (!goldTokenInfo) {
-            return;
-        }
+        // let goldTokenInfo = user.tokenInfos.find(t => t.token === "usdt")
+        // if (!goldTokenInfo) {
+        //     return;
+        // }
 
-        assetManager.loadRemote<SpriteFrame>(goldTokenInfo.image, {}, (err, spriteFrame) => {
-            this.goldIcon.spriteFrame = spriteFrame;
-        })
+        // assetManager.loadRemote<SpriteFrame>(goldTokenInfo.image, {}, (err, spriteFrame) => {
+        //     this.goldIcon.spriteFrame = spriteFrame;
+        // })
         // this.goldIcon.spriteFrame = user.tokenInfos[0].image;
         this.goldNumber.string = user.balance["gold"]
     }
 
     changeTab(event: Event, customEventData: string) {
-        for (const t of this.tabs) {
+        for (const t of this.tabPanels) {
             t.active = false;
         }
 
         if (customEventData === "0") {
-            this.tabs[0].active = true;
+            this.tabPanels[0].active = true;
+            this.selectedTabBg.position = this.tabs[0].position;
         } else if (customEventData === "1") {
-            this.tabs[1].active = true;
+            this.tabPanels[1].active = true;
+            this.selectedTabBg.position = this.tabs[1].position;
         }
     }
 
     onBottomBtnClicked(event: Event, customEventData: string) {
+        for (const btnNode of this.bottomBtns) {
+            btnNode.getComponent(Sprite).spriteFrame = this.bottomBtnUnselected;
+        }
+
         if (customEventData === "0") {
+            this.bottomBtns[0].getComponent(Sprite).spriteFrame = this.bottomBtnSelected;
             ViewMgr.instance.show(ShopView);
         } else if (customEventData === "1") {
+            this.bottomBtns[1].getComponent(Sprite).spriteFrame = this.bottomBtnSelected;
             ViewMgr.instance.show(HatchEggView);
         } else if (customEventData === "2") {
+            this.bottomBtns[2].getComponent(Sprite).spriteFrame = this.bottomBtnSelected;
             ViewMgr.instance.show(FeedGooseView);
         }
     }
