@@ -21,5 +21,7 @@ export class View extends Component {
     hide() {
         this.node.active = false;
         this.onHidden();
+        if (this.mgr.blackMask)
+            this.mgr.blackMask.active = false;
     }
 }

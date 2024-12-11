@@ -8,6 +8,7 @@ export class ViewMgr extends Component {
     public static instance: ViewMgr = null;
 
     @property([View]) views: View[] = [];
+    @property(Node) blackMask: Node = null;
 
     currentView: View;
 
@@ -52,6 +53,9 @@ export class ViewMgr extends Component {
                 }
             }
         }
+        
+        if (this.blackMask)
+            this.blackMask.active = true;
         return findView;
     }
 
@@ -77,5 +81,8 @@ export class ViewMgr extends Component {
             }
         }
         this.currentView = null;
+
+        if (this.blackMask)
+            this.blackMask.active = false;
     }
 }
