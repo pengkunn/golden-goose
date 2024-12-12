@@ -7,7 +7,7 @@ export class User {
     propsMetas: IPropsMeta[];
 
     balance: { [key: string]: string }
-    ntfs: INft[];
+    ntfs: { eggs: INft[], gooses: INft[] };
     props: IProps[];
 }
 

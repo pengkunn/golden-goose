@@ -1,11 +1,14 @@
-import { _decorator, assetManager, Label, loader, Node, Sprite, SpriteFrame } from 'cc';
-import { api, setJwtToken } from '../api/api';
-import { View } from '../components/view/View';
-import { ViewMgr } from '../components/view/ViewMgr';
-import { FeedGooseView } from './FeedGooseView';
-import { HatchEggView } from './HatchEggView';
-import { ShopView } from './ShopView';
-import { user } from '../domain/user';
+import { _decorator, assetManager, instantiate, Label, loader, Node, Sprite, SpriteFrame } from 'cc';
+import { api, setJwtToken } from '../../api/api';
+import { View } from '../../components/view/View';
+import { ViewMgr } from '../../components/view/ViewMgr';
+import { FeedGooseView } from '../FeedGooseView';
+import { HatchEggView } from '../HatchEggView';
+import { ShopView } from '../ShopView';
+import { user } from '../../domain/user';
+import { AccountComp } from './AccountComp';
+import { GooseComp } from './GooseComp';
+import { EggComp } from './EggComp';
 
 const { ccclass, property } = _decorator;
 
@@ -19,6 +22,11 @@ export class MainView extends View {
     @property([Node]) bottomBtns: Node[] = [];
     @property(SpriteFrame) bottomBtnSelected: SpriteFrame = null;
     @property(SpriteFrame) bottomBtnUnselected: SpriteFrame = null;
+    @property(Node) accountPanel: Node = null;
+    @property(Node) gooseContainer: Node = null;
+    @property(Node) gooseTemplate: Node = null;
+    @property(Node) eggContainer: Node = null;
+    @property(Node) eggTemplate: Node = null;
 
 
     start() {
@@ -71,6 +79,48 @@ export class MainView extends View {
         // })
         // this.goldIcon.spriteFrame = user.tokenInfos[0].image;
         this.goldNumber.string = user.balance["gold"]
+
+        // refresh account panel
+        let accountComp = this.accountPanel.getComponent(AccountComp);
+        accountComp.accountNameLable.string = user.loginResult.identifier;
+        accountComp.uidLable.string = `UID: ${user.loginResult.user_id.toString()}`;
+        accountComp.goldNumberLabel.string = user.balance["gold"];
+        accountComp.usdtNumberLabel.string = user.balance["usdt"];
+        accountComp.walletAddrLabel.string = user.loginResult.wallet_address;
+
+        // refresh goose panel
+        let gooseMetas = user.ntfMetas.filter((n) => n.collection === "goose")
+        for (const g of gooseMetas) {
+            let newGooseNode = instantiate(this.gooseTemplate)
+            newGooseNode.active = true
+            newGooseNode.parent = this.gooseContainer;
+            let gooseComp = newGooseNode.getComponent(GooseComp)
+            let gooses = user.ntfs.gooses.filter((n) => n.level === g.level)
+            if (gooses.length !== 0) {
+                gooseComp.numberLabel.node.active = true;
+                gooseComp.numberLabel.string = `× ${gooses.length}`
+            } else {
+                gooseComp.numberLabel.node.active = false;
+            }
+            // gooseComp.image.spriteFrame
+        }
+
+        // refresh eggs panel
+        let eggMetas = user.ntfMetas.filter((n) => n.collection === "egg")
+        for (const g of eggMetas) {
+            let neweggNode = instantiate(this.eggTemplate)
+            neweggNode.active = true
+            neweggNode.parent = this.eggContainer;
+            let eggComp = neweggNode.getComponent(EggComp)
+            let eggs = user.ntfs.eggs.filter((n) => n.level === g.level)
+            if (eggs.length !== 0) {
+                eggComp.numberLabel.node.active = true;
+                eggComp.numberLabel.string = `× ${eggs.length}`
+            } else {
+                eggComp.numberLabel.node.active = false;
+            }
+        }
+
     }
 
     changeTab(event: Event, customEventData: string) {
@@ -102,6 +152,10 @@ export class MainView extends View {
             this.bottomBtns[2].getComponent(Sprite).spriteFrame = this.bottomBtnSelected;
             ViewMgr.instance.show(FeedGooseView);
         }
+    }
+
+    onAccountBtnClicked(event: Event, customEventData: string) {
+        this.accountPanel.active = !this.accountPanel.active
     }
 }
 

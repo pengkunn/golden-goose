@@ -43,9 +43,12 @@ export interface INftMeta {
 export interface INft {
     collection: number;
     nft_id: string;
-    image: number;
-    level: string;
+    image: string;
+    level: number;
     status: string;
+    incubate_time: string;
+    mint_time: string;
+    feed_time: string;
 }
 
 export interface IPropsMeta {
@@ -89,16 +92,16 @@ export const api = {
         return client.get<IResult<INftMeta[]>>("nft/meta", { queryMap: params })
     },
     async getNftList() {
-        return client.get<IResult<INft[]>>("spending/nft/list", {})
+        return client.get<IResult<{ gooses: INft[], eggs: INft[] }>>("spending/nft/list", {})
     },
     async getNftDetail(params: { collection: string; nft_id: string }) {
-        return client.get<IResult<INft[]>>("v2/spending/nft/detail", { queryMap: params })
+        return client.get<IResult<INft>>("v2/spending/nft/detail", { queryMap: params })
     },
-    async mintEgg(params: { source: string; amount: number; signature: string }) {
-        return client.post<IResult<INft[]>>("egg/mint", { body: params })
+    async mintEgg(params: { source: string; amount: number; timestamp: number; signature: string }) {
+        return client.post<IResult<INft>>("egg/mint", { body: params })
     },
-    async incubateEgg(params: { nft_ids: number[] }) {
-        return client.post<IResult<INft[]>>("egg/incubate", { body: params })
+    async incubateEgg(params: { nft_id: number }) {
+        return client.post<IResult<INft>>("egg/incubate", { body: params })
     },
     async getPropsMeta(params: { props_id?: string }) {
         return client.get<IResult<IPropsMeta[]>>("props/meta", { queryMap: params })
