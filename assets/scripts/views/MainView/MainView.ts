@@ -4,7 +4,7 @@ import { View } from '../../components/view/View';
 import { ViewMgr } from '../../components/view/ViewMgr';
 import { FeedGooseView } from '../FeedGooseView';
 import { HatchEggView } from '../HatchEggView';
-import { ShopView } from '../ShopView';
+import { ShopView } from '../ShopView/ShopView';
 import { user } from '../../domain/user';
 import { AccountComp } from './AccountComp';
 import { GooseComp } from './GooseComp';
@@ -144,7 +144,8 @@ export class MainView extends View {
 
         if (customEventData === "0") {
             this.bottomBtns[0].getComponent(Sprite).spriteFrame = this.bottomBtnSelected;
-            ViewMgr.instance.show(ShopView);
+            let v = ViewMgr.instance.show(ShopView);
+            v.refresh();
         } else if (customEventData === "1") {
             this.bottomBtns[1].getComponent(Sprite).spriteFrame = this.bottomBtnSelected;
             ViewMgr.instance.show(HatchEggView);

@@ -8,11 +8,15 @@ export class PopupMgr extends Component {
     @property(Node) blackBg: Node = null;
     @property([Popup]) popupTemplates: Popup[] = [];
 
+    static instance: PopupMgr;
+
     popups: Popup[] = [];
 
-    start() {}
+    start() {
+        PopupMgr.instance = this;
+    }
 
-    update(deltaTime: number) {}
+    update(deltaTime: number) { }
 
     show<T extends Popup>(classConstructor: new (...args: any[]) => T): T {
         let popup: T;
